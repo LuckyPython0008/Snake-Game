@@ -1,0 +1,64 @@
+Snake Game Roadmap: Step by Step
+
+
+Stage 1: Moving Head Only
+Goal: Make a single square move around the screen with arrow keys.
+Focus: Pygame basics, game loop, input handling.
+Create screen and clock.
+Draw a square for the snake head.
+Move it with arrow keys.
+Prevent it from going off-screen.
+✅ Mini-win: You can move a square anywhere on the screen.
+
+Stage 2: Spawn Food
+Goal: Add a “food” square the snake can collide with.
+Focus: Random placement, drawing multiple rectangles.
+Draw a red square somewhere randomly.
+Ensure it doesn’t spawn outside screen boundaries.
+✅ Mini-win: Food appears on screen.
+
+Stage 3: Eating & Growing
+Goal: Snake grows when it eats food.
+Focus: List of positions, body tracking.
+Keep snake = [(x_head, y_head), (x1, y1), ...]
+On collision with food, don’t remove tail → snake grows.
+✅ Mini-win: Snake length increases each time it eats.
+
+Stage 4: Body Follows Head
+Goal: Make the tail follow the head properly.
+Focus: Insert new head at front, remove last element normally.
+Each frame:
+Calculate new head position.
+snake.insert(0, new_head)
+snake.pop() (unless just ate food)
+Draw all body segments at their positions.
+✅ Mini-win: Snake moves smoothly with body following.
+
+Stage 5: Food Respawn
+Goal: Food appears in a new random location after being eaten.
+Focus: Random module, position checks.
+Ensure food doesn’t spawn on top of the snake body.
+✅ Mini-win: Food “respawns” every time snake eats.
+
+Stage 6: Collision Detection
+Goal: Snake dies if it hits walls or itself.
+Walls: if head_x < 0 or head_x >= SCREEN_WIDTH → game over
+Self: if new_head in snake[1:] → game over
+✅ Mini-win: Game ends correctly on collision.
+
+Stage 7: UI & Polish
+Goal: Make it feel like a real game.
+Add:
+Score display
+Restart button
+Quit button
+Optional: speed increase over time, sound effects
+✅ Mini-win: A complete, playable Snake game.
+
+💡 Extra Tips:
+
+Work stage by stage, test each before moving on.
+
+Use fixed grid movement (e.g., move 20px per step) → makes body following easier.
+
+Keep your snake positions in a list of tuples, not Rect objects.
