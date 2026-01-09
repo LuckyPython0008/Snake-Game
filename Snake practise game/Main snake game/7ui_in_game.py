@@ -30,7 +30,7 @@ class Snake:
         self.normal_image = pygame.image.load('IMAGES/3.jpg')
         self.image = pygame.transform.scale(self.normal_image, (SNAKE_SIZE, SNAKE_SIZE))
         self.rect = self.image.get_rect()
-        self.speed = 60
+        self.speed = 1
 
         # FLAGS
         self.fruit_on_snake = False
@@ -71,7 +71,7 @@ class Snake:
         pygame.mixer.music.play(-1)
 
     def Run(self):
-        dt = self.clock.tick(60)/1000
+        # dt = self.clock.tick(60)/1000
         while True:
             self.Events()
             if self.snake_hit or self.game_pause:
@@ -82,7 +82,7 @@ class Snake:
                     self.popup_ui()
 
             else:
-                self.Update_Pos(dt)
+                self.Update_Pos()
 
             self.collision()
             self.draw()
@@ -113,7 +113,6 @@ class Snake:
                     if self.pausebutton_rect.collidepoint(event.pos):
                         self.click.play()
                         self.game_pause = True
-                        self.popup_ui() 
                     if self.game_pause:
                         if self.resumebutton_rect.collidepoint(event.pos):
                             self.click.play()
@@ -203,18 +202,21 @@ class Snake:
                     continue
 
                 avaliable_space.append(Fruit_rect)
-        self.food = random.choice(avaliable_space)
+        if avaliable_space:
+            self.food = random.choice(avaliable_space)
+        else:
+            self.snake_hit = True
 
-    def Update_Pos(self, dt):
+    def Update_Pos(self):
         dx, dy = 0,0 
         if self.direction == 'UP':
-            dy = -self.speed * dt
+            dy = -self.speed 
         elif self.direction == 'DOWN':
-            dy = self.speed * dt
+            dy = self.speed 
         elif self.direction == 'LEFT':
-            dx = -self.speed * dt
+            dx = -self.speed 
         elif self.direction == 'RIGHT':
-            dx = self.speed * dt
+            dx = self.speed 
 
         if dx != 0 or dy != 0:
             self.rect.x += dx
@@ -234,10 +236,10 @@ class Snake:
                     seg.topleft = self.positions[step]
 
             if self.just_ate: 
-                tail = self.snake[-1].copy()
-                self.snake.append(tail)
-                self.just_ate = False
+                tail_pos = self.snake[-1].copy()
+                self.snake.append(tail_pos)
 
+                self.just_ate = False
 
     def button_rects(self):
         self.restartbutton_rect = pygame.Rect(450,200,200,40)
@@ -322,7 +324,9 @@ class Snake:
             if self.score > self.highscore:
                 self.highscore = self.score
                 self.save_data()
-            self.speed *= SPEED_RISE
+
+            # min() is the way to limit the speed of snake going beyond control, first argument will let the speed rise freely until it is less than 2nd argument, once it cross the 2nd one, the speed will be clamped at 20, no matter how high the value of self.speed * SPEED_RISE is, it makes the game playable at high levels
+            self.speed = min(self.speed * SPEED_RISE, 20)
             self.spawn_food()
             self.just_ate = True
 
@@ -343,13 +347,13 @@ class Snake:
     
     def draw(self):
         self.screen.fill(SCREEN_COLOR)
+        pygame.draw.rect(self.screen, (255,0,0), self.food)
         for seg in self.snake:
             self.screen.blit(self.image, seg)
 
-        pygame.draw.rect(self.screen, (255,0,0), self.food)
         self.button_ui()
         if self.game_pause:
-            self.bg_of_popup = pygame.rect.Rect(420,170,260,200)
+            self.bg_of_popup = pygame.Rect(420,170,260,200)
             pygame.draw.rect(self.screen, (48,71,67), self.bg_of_popup)
             self.popup_ui()
 
